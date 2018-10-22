@@ -1,0 +1,70 @@
+---
+- name: Install Radicale package dependencies.
+  apt:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - python3
+      - apache2-utils
+
+- name: Install Radicale Python dependencies.
+  pip:
+    executable: pip3 # Radicale requires Python 3.3 or greater.
+    name: "{{ item }}"
+    state: present
+    extra_args: "--upgrade"
+  loop:
+    - passlib
+    - bcrypt
+
+- name: Create Radicale system user.
+  user:
+    name: "{{ radicale_server_username  }}"
+    system: yes
+    home: "{{ radicale_server_home_dir }}"
+    shell: "/bin/false"
+    state: present
+
+- name: Install Radicale.
+  pip:
+    executable: pip3 # Radicale requires Python 3.3 or greater.
+    name: radicale
+    state: present
+    extra_args: "--upgrade"
+
+- name: Create Radicale configuration directory.
+  file:
+    path: /etc/radicale
+    state: directory
+
+- name: Write Radicale configuration file.
+  template:
+    src: etc/radicale/config.j2
+    dest: /etc/radicale/config
+  notify:
+    - Restart Radicale.
+
+- name: Write Radicale user rights configuration.
+  copy:
+    src: rights.conf
+    dest: "{{ radicale_server_home_dir }}/rights.conf"
+    owner: "{{ radicale_server_username }}"
+    group: "{{ radicale_server_username }}"
+    mode: "400"
+  notify:
+    - Restart Radicale.
+
+- name: Create systemd service unit.
+  template:
+    src: radicale.service.j2
+    dest: /etc/systemd/system/radicale.service
+    # TODO:
+    #validate: "systemd-analyze verify %s"
+  notify:
+    - Reload systemd.
+    - Restart Radicale.
+
+- name: Enable Radicale service.
+  service:
+    name: radicale
+    enabled: yes

@@ -1,0 +1,53 @@
+---
+radicale_server_username: radicale
+radicale_server_home_dir: /var/lib/radicale
+
+# See https://radicale.org/configuration/
+radicale_config:
+  server:
+    hosts:
+      - addr: 127.0.0.1
+        port: 5232
+    #daemon: true
+    #pid: /var/run/radicale/radicale.pid
+    #max_connections: 20
+    #max_connections: 100000000
+    #timeout: 30
+    dns_lookup: false
+    #realm: Radicale Realm
+    # Consider TLS directives carefully before activating them.
+    #ssl: true
+    #certificate: "/etc/ssl/radicale.cert.pem"
+    #key: "/etc/ssl/radicale.key.pem"
+    #certificate_authority:
+    #protocol: PROTOCOL_TLSv1_2
+    #ciphers:
+  #encoding:
+    #request: utf-8
+    #stock: utf-8
+  auth:
+    type: htpasswd
+    htpasswd_filename: "{{ radicale_server_home_dir }}/users.htpasswd"
+    htpasswd_encryption: bcrypt
+    delay: 1
+  rights:
+    type: from_file
+    file: "{{ radicale_server_home_dir }}/rights.conf"
+  storage:
+    type: multifilesystem
+    filesystem_folder: "{{ radicale_server_home_dir }}/collections"
+    filesystem_locking: true
+    filesystem_fsync: true
+    # For an example of the `hook` directive in use, see
+    # http://radicale.org/versioning/
+    #hook:
+  #web:
+    #type: internal
+  #headers:
+    #X-Extra-HTTP-Header: foo
+    #X-Another-Header: bar
+  #logging:
+    #debug: false
+    #mask_passwords: true
+    #full_environment: false
+    #config: "/etc/radicale/log.conf"

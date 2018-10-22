@@ -1,0 +1,141 @@
+# Radicale configuration file.
+#
+# See http://radicale.org/configuration/ for more details and
+# descriptions of additional available configuration directives.
+
+{% if radicale_config.server is defined %}
+[server]
+{% if radicale_config.server.hosts is defined %}
+hosts = {% for host in radicale_config.server.hosts %}
+{{ host.addr }}:{{ host.port }}{% if not loop.last %},{% endif %}
+{% endfor %}
+
+{% endif %}
+{% if radicale_config.server.daemon is defined %}
+daemon = {{ radicale_config.server.daemon }}
+{% endif %}
+{% if radicale_config.server.pid is defined %}
+pid = {{ radicale_config.server.pid }}
+{% endif %}
+{% if radicale_config.server.max_connections is defined %}
+max_connections = {{ radicale_config.server.max_connections | default(20) | int }}
+{% endif %}
+{% if radicale_config.server.max_content_length is defined %}
+max_content_length = {{ radicale_config.server.max_content_length | default(100000000) | int }}
+{% endif %}
+{% if radicale_config.server.timeout is defined %}
+timeout = {{ radicale_config.server.timeout | default(30) | int }}
+{% endif %}
+{% if radicale_config.server.dns_lookup is defined %}
+dns_lookup = {{ radicale_config.server.dns_lookup | default(true) }}
+{% endif %}
+{% if radicale_config.server.realm is defined %}
+realm = {{ radicale_config.server.realm | default('Radicale - Password Required') }}
+{% endif %}
+{% if radicale_config.server.ssl is defined %}
+ssl = {{ radicale_config.server.ssl | default('false') }}
+{% endif %}
+{% if radicale_config.server.certificate is defined %}
+certificate = {{ radicale_config.server.certificate | default('/etc/ssl/radicale.cert.pem') }}
+{% endif %}
+{% if radicale_config.server.key is defined %}
+key = {{ radicale_config.server.key | default('/etc/ssl/radicale.key.pem') }}
+{% endif %}
+{% if radicale_config.server.certificate_authority is defined %}
+certificate_authority = {{ radicale_config.server.certificate_authority }}
+{% endif %}
+{% if radicale_config.server.protocol is defined %}
+protocol = {{ radicale_config.server.protocol | default('PROTOCOL_TLSv1_2') }}
+{% endif %}
+{% if radicale_config.server.ciphers is defined %}
+ciphers = {{ radicale_config.server.ciphers }}
+{% endif %}
+{% endif %}{# END if radicale_config.server is defined #}
+{% if radicale_config.encoding is defined %}
+
+[encoding]
+{% if radicale_config.encoding.request is defined %}
+request = {{ radicale_config.encoding.request | default('utf-8') }}
+{% endif %}
+{% if radicale_config.encoding.stock is defined %}
+stock = {{ radicale_config.encoding.stock | default('utf-8') }}
+{% endif %}
+{% endif %}{# END if radicale_config.encoding is defined #}
+{% if radicale_config.auth is defined %}
+
+[auth]
+{% if radicale_config.auth.type is defined %}
+type = {{ radicale_config.auth.type }}
+{% endif %}
+{% if radicale_config.auth.htpasswd_filename is defined %}
+htpasswd_filename = {{ radicale_config.auth.htpasswd_filename }}
+{% endif %}
+{% if radicale_config.auth.htpasswd_encryption %}
+htpasswd_encryption = {{ radicale_config.auth.htpasswd_encryption }}
+{% endif %}
+{% if radicale_config.auth.delay is defined %}
+delay = {{ radicale_config.auth.delay | default('1') }}
+{% endif %}
+{% endif %}{# END if radicale_config.auth is defined #}
+{% if radicale_config.rights is defined %}
+
+[rights]
+{% if radicale_config.rights.type is defined %}
+type = {{ radicale_config.rights.type | default('owner_only') }}
+{% endif %}
+{% if radicale_config.rights is defined and radicale_config.rights.type == "from_file" %}
+file = {{ radicale_config.rights.file }}
+{% endif %}
+{% endif %}{# END if radicale_config.rights is defined #}
+{% if radicale_config.storage is defined %}
+
+[storage]
+{% if radicale_config.storage.type is defined %}
+type = {{ radicale_config.storage.type | default('multifilesystem') }}
+{% endif %}
+{% if radicale_config.storage.filesystem_folder %}
+filesystem_folder = {{ radicale_config.storage.filesystem_folder | default('/var/lib/radicale/collections') }}
+{% endif %}
+{% if radicale_config.storage.filesystem_locking is defined %}
+filesystem_locking = {{ radicale_config.storage.filesystem_locking | default(true) }}
+{% endif %}
+{% if radicale_config.storage.max_sync_token_age is defined %}
+max_sync_token_age = {{ radicale_config.storage.max_sync_token_age | default(2592000) | int }}
+{% endif %}
+{% if radicale_config.storage.filesystem_fsync is defined %}
+filesystem_fsync = {{ radicale_config.storage.filesystem_fsync | default(true) }}
+{% endif %}
+{% if radicale_config.storage.hook is defined %}
+hook = {{ radicale_config.storage.hook }}
+{% endif %}
+{% endif %}{# END if radicale_config.storage is defined #}
+{% if radicale_config.web is defined %}
+
+[web]
+{% if radicale_config.web.type is defined %}
+type = {{ radicale_config.web.type | default('internal') }}
+{% endif %}
+{% endif %}{# END if radicale_config.web is defined #}
+{% if radicale_config.headers is defined %}
+
+[headers]
+{% for k in radicale_config.headers %}
+{{ k }} = {{ radicale_config.headers[k] }}
+{% endfor %}
+{% endif %}{# END if radicale_config.headers is defined #}
+{% if radicale_config.logging is defined %}
+
+[logging]
+{% if radicale_config.logging.debug is defined %}
+debug = {{ radicale_config.logging.debug | default(false) }}
+{% endif %}
+{% if radicale_config.logging.mask_passwords is defined %}
+mask_passwords = {{ radicale_config.logging.mask_passwords | default(true) }}
+{% endif %}
+{% if radicale_config.logging.full_environment %}
+full_environment = {{ radicale_config.logging.full_environment | default(false) }}
+{% endif %}
+{% if radicale_config.logging.config %}
+config = {{ radicale_config.logging.config }}
+{% endif %}
+{% endif %}{# END if radicale_config.logging is defined #}

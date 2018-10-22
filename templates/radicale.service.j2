@@ -1,0 +1,28 @@
+[Unit]
+Description=Radicale CalDAV and CardDAV server
+
+[Service]
+User={{ radicale_server_username }}
+Group={{ radicale_server_username }}
+UMask=0027
+RuntimeDirectory=radicale
+ExecStart=/usr/local/bin/radicale
+Restart=on-failure
+# Extra security precautions
+LockPersonality=true
+MemoryDenyWriteExecute=true
+NoNewPrivileges=true
+PrivateDevices=true
+PrivateTmp=true
+PrivateUsers=true
+ProtectControlGroups=true
+ProtectHome=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+ProtectSystem=full
+ReadWritePaths={{ radicale_config.storage.filesystem_folder }}
+RestrictAddressFamilies=AF_INET
+RestrictRealtime=true
+
+[Install]
+WantedBy=multi-user.target
