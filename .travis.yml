@@ -1,0 +1,71 @@
+---
+language: minimal
+
+env:
+  - docker_repo: resin/rpi-raspbian
+  - docker_file: Dockerfile.geerlingguy-debian9-ansible
+  - docker_file: Dockerfile.geerlingguy-debian8-ansible
+  - docker_file: Dockerfile.geerlingguy-ubuntu1804-ansible
+  # TODO: RedHat-based systems.
+  #- docker_file: Dockerfile.geerlingguy-centos7-ansible
+  #- docker_file: Dockerfile.geerlingguy-fedora27-ansible
+
+matrix:
+  # TODO: Fix these failures?
+  allow_failures:
+    # TODO: Fixing the Raspbian build is going to require QEMU and
+    #       binfmt_misc support. See:
+    #       https://www.balena.io/blog/building-arm-containers-on-any-x86-machine-even-dockerhub/
+    #       In the mean time, allow this to fail.
+    - env: docker_repo=resin/rpi-raspbian
+    #- env: docker_file=Dockerfile.geerlingguy-centos7-ansible
+    #- env: docker_file=Dockerfile.geerlingguy-fedora27-ansible
+
+install:
+  # TODO: If this becomes a gnarly conditional make it a shell script.
+  - >
+    if [ x"${docker_file}" != "x" ]; then
+    docker image build --tag built-image --file tests/"${docker_file}" tests;
+    fi
+  - container_id=$(mktemp)
+  - >
+    docker container run --detach --privileged
+    --volume /sys/fs/cgroup:/sys/fs/cgroup:ro
+    --volume "${PWD}":/etc/ansible/roles/ansible-role-radicale:ro
+    --publish 5232:5232
+    built-image > ${container_id}
+
+  # Bootstrap to ensure Ansible is available in the container.
+  # This is to ensure that the containers not already pre-imaged with
+  # Ansible installed (i.e., Raspbian image) will have it available.
+  - >
+    docker container exec --tty $(cat ${container_id}) env TERM=xterm
+    pip install ansible
+
+script:
+  # Check Ansible role/playbook syntax.
+  - >
+    docker container exec --tty "$(cat ${container_id})" env TERM=xterm
+    ansible-playbook --syntax-check /etc/ansible/roles/ansible-role-radicale/tests/test.yml
+
+  # Ensure the role/playbook runs without errors or failures.
+  - >
+    docker exec --tty "$(cat ${container_id})" env TERM=xterm
+    ansible-playbook /etc/ansible/roles/ansible-role-radicale/tests/test.yml
+
+  # Run the role/playbook again to test idempotence.
+  - idempotence=$(mktemp)
+  - >
+    docker exec "$(cat ${container_id})"
+    ansible-playbook /etc/ansible/roles/ansible-role-radicale/tests/test.yml
+    | tee -a ${idempotence}
+  - >
+    tail ${idempotence}
+    | grep -q 'changed=0.*failed=0'
+    && (echo 'Idempotence test: pass' && exit 0)
+    || (echo 'Idempotence test: fail' && exit 1)
+
+  - curl http://localhost:5232/
+
+after_script:
+  - docker container rm -f "$(cat ${container_id})"

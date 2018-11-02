@@ -1,0 +1,6 @@
+# This Ansible playbook runs test plays to ensure the role works.
+---
+- name: Test role.
+  hosts: localhost
+  roles:
+    - ansible-role-radicale

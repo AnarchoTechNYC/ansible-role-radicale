@@ -20,7 +20,7 @@
 - name: Create Radicale system user.
   user:
     name: "{{ radicale_server_username  }}"
-    system: yes
+    system: true
     home: "{{ radicale_server_home_dir }}"
     shell: "/bin/false"
     state: present
@@ -64,7 +64,8 @@
     - Reload systemd.
     - Restart Radicale.
 
-- name: Enable Radicale service.
+- name: Start and enable Radicale service.
   service:
     name: radicale
-    enabled: yes
+    state: "{{ radicale_service_state }}"
+    enabled: true

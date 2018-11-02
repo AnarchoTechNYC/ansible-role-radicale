@@ -1,12 +1,13 @@
 ---
 radicale_server_username: radicale
 radicale_server_home_dir: /var/lib/radicale
+radicale_service_state: started
 
 # See https://radicale.org/configuration/
 radicale_config:
   server:
     hosts:
-      - addr: 127.0.0.1
+      - addr: 0.0.0.0
         port: 5232
     #daemon: true
     #pid: /var/run/radicale/radicale.pid
