@@ -6,6 +6,9 @@
     packages:
       - python3
       - apache2-utils
+      # These two are for Ansible itself to run on the managed host.
+      - python-passlib
+      - python-bcrypt
 
 - name: Install Radicale Python dependencies.
   pip:
@@ -53,6 +56,34 @@
     mode: "400"
   notify:
     - Restart Radicale.
+
+- name: Ensure Radicale user accounts are defined.
+  when: radicale_config.auth is defined and
+        radicale_config.auth.type is defined and "htpasswd" == radicale_config.auth.type
+  block:
+    - name: Set Radicale user with password.
+      when: item.password is defined
+      htpasswd:
+        path: "{{ radicale_config.auth.htpasswd_filename | default('/var/lib/radicale/users.htpasswd') }}"
+        name: "{{ item.name }}"
+        password: "{{ item.password }}"
+        state: "{{ item.state | default('present') }}"
+        crypt_scheme: "bcrypt"
+        mode: "600"
+        owner: "{{ radicale_server_username }}"
+        group: "{{ radicale_server_username }}"
+      loop: "{{ radicale_users }}"
+
+    - name: Set Radicale user with password hash.
+      when: item.bcrypt_hash is defined
+      lineinfile:
+        path: "{{ radicale_config.auth.htpasswd_filename | default('/var/lib/radicale/users.htpasswd') }}"
+        line: "{{ item.name }}:{{ item.bcrypt_hash }}"
+        state: "{{ item.state | default('present') }}"
+        mode: "600"
+        owner: "{{ radicale_server_username }}"
+        group: "{{ radicale_server_username }}"
+      loop: "{{ radicale_users }}"
 
 - name: Create systemd service unit.
   template:

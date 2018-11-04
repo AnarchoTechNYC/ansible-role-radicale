@@ -7,7 +7,7 @@
 [server]
 {% if radicale_config.server.hosts is defined %}
 hosts = {% for host in radicale_config.server.hosts %}
-{{ host.addr }}:{{ host.port }}{% if not loop.last %},{% endif %}
+{{ host.addr | default('0.0.0.0') }}:{{ host.port | default('5232') }}{% if not loop.last %},{% endif %}
 {% endfor %}
 
 {% endif %}
@@ -70,7 +70,7 @@ type = {{ radicale_config.auth.type }}
 {% if radicale_config.auth.htpasswd_filename is defined %}
 htpasswd_filename = {{ radicale_config.auth.htpasswd_filename }}
 {% endif %}
-{% if radicale_config.auth.htpasswd_encryption %}
+{% if radicale_config.auth.htpasswd_encryption is defined %}
 htpasswd_encryption = {{ radicale_config.auth.htpasswd_encryption }}
 {% endif %}
 {% if radicale_config.auth.delay is defined %}
@@ -93,7 +93,7 @@ file = {{ radicale_config.rights.file }}
 {% if radicale_config.storage.type is defined %}
 type = {{ radicale_config.storage.type | default('multifilesystem') }}
 {% endif %}
-{% if radicale_config.storage.filesystem_folder %}
+{% if radicale_config.storage.filesystem_folder is defined %}
 filesystem_folder = {{ radicale_config.storage.filesystem_folder | default('/var/lib/radicale/collections') }}
 {% endif %}
 {% if radicale_config.storage.filesystem_locking is defined %}

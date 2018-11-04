@@ -52,3 +52,14 @@ radicale_config:
     #mask_passwords: true
     #full_environment: false
     #config: "/etc/radicale/log.conf"
+
+# List of Radicale user information as a dictionary.
+radicale_users:
+  - name: admin     # The username.
+    password: admin # Their password. This should probably be vault-encrypted.
+    # As an alternative to a password, you can specify a bcrypt hash.
+    # Create this hash using the standard `htpasswd` utility, then
+    # paste it here. This method allows a user to generate a password
+    # for their account themselves, and then send you the hash rather
+    # than the plaintext.
+    #bcrypt_hash: "$2y$05$t31SnKFWj9UcMr5Y96cl3uBFkdhelqkZn77TnquIeVb9sriEByUPK"
