@@ -63,6 +63,7 @@
   block:
     - name: Set Radicale user with password.
       when: item.password is defined
+      no_log: true
       htpasswd:
         path: "{{ radicale_config.auth.htpasswd_filename | default('/var/lib/radicale/users.htpasswd') }}"
         name: "{{ item.name }}"
@@ -76,6 +77,7 @@
 
     - name: Set Radicale user with password hash.
       when: item.bcrypt_hash is defined
+      no_log: true
       lineinfile:
         path: "{{ radicale_config.auth.htpasswd_filename | default('/var/lib/radicale/users.htpasswd') }}"
         line: "{{ item.name }}:{{ item.bcrypt_hash }}"
