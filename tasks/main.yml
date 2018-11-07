@@ -15,7 +15,6 @@
     executable: pip3 # Radicale requires Python 3.3 or greater.
     name: "{{ item }}"
     state: present
-    extra_args: "--upgrade"
   loop:
     - passlib
     - bcrypt
@@ -33,7 +32,6 @@
     executable: pip3 # Radicale requires Python 3.3 or greater.
     name: radicale
     state: present
-    extra_args: "--upgrade"
 
 - name: Create Radicale configuration directory.
   file:

@@ -4,7 +4,24 @@ An [Ansible role](https://docs.ansible.com/ansible/latest/user_guide/playbooks_r
 
 # Configuring Radicale
 
-> :construction: TK-TODO
+To configure your Radicale server instance, use the `radicale_config` dictionary. The keys in this dictionary map nearly one-to-one to the configuration directives described in [Radicale's Configuration documentation page](https://radicale.org/configuration/). Configuration directive groups are their own dictionaries, and directives that can accept more than one value are specified as a list.
+
+Some examples may prove helpful:
+
+1. Simple Radicale server with default for all values:
+    ```yml
+    radicale_config:
+    ```
+1. Simple Radicale server bound to the local host only and listening on the alternative HTTP port:
+    ```yml
+    radicale_config:
+      server:
+        hosts:
+          - addr: 127.0.0.1
+            port: 8080
+    ```
+
+See the comments in the [`defaults/main.yml`](defaults/main.yml) file for additional details.
 
 # Adding or removing Radicale user accounts
 
