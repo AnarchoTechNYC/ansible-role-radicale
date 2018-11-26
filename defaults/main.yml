@@ -1,6 +1,6 @@
 ---
 radicale_server_username: radicale
-radicale_server_home_dir: /var/lib/radicale
+radicale_server_home_dir: "/var/lib/{{ radicale_server_username }}"
 radicale_service_state: started
 
 # See https://radicale.org/configuration/

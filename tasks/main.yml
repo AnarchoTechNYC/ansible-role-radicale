@@ -5,6 +5,8 @@
   vars:
     packages:
       - python3
+      - python3-pip
+      - python3-setuptools
       - apache2-utils
       # These two are for Ansible itself to run on the managed host.
       - python-passlib
@@ -56,9 +58,18 @@
     - Restart Radicale.
 
 - name: Ensure Radicale user accounts are defined.
-  when: radicale_config.auth is defined and
-        radicale_config.auth.type is defined and "htpasswd" == radicale_config.auth.type
+  when:
+    - radicale_config.auth is defined
+    - radicale_config.auth.type is defined
+    - radicale_config.auth.type == "htpasswd"
   block:
+    - name: Ensure Radicale htpasswd file exists.
+      file:
+        path: "{{ radicale_config.auth.htpasswd_filename | default('/var/lib/radicale/users.htpasswd') }}"
+        state: touch
+        access_time: preserve
+        modification_time: preserve
+
     - name: Set Radicale user with password.
       when: item.password is defined
       no_log: true
