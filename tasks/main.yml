@@ -8,7 +8,8 @@
       - python3-pip
       - python3-setuptools
       - apache2-utils
-      # These two are for Ansible itself to run on the managed host.
+      # These three are for Ansible itself to run on the managed host.
+      - python-setuptools
       - python-passlib
       - python-bcrypt
 
