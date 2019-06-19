@@ -9,11 +9,11 @@ To configure your Radicale server instance, use the `radicale_config` dictionary
 Some examples may prove helpful:
 
 1. Simple Radicale server with default for all values:
-    ```yml
+    ```yaml
     radicale_config:
     ```
 1. Simple Radicale server bound to the local host only and listening on the alternative HTTP port:
-    ```yml
+    ```yaml
     radicale_config:
       server:
         hosts:
@@ -21,7 +21,7 @@ Some examples may prove helpful:
             port: 8080
     ```
 
-See the comments in the [`defaults/main.yml`](defaults/main.yml) file for additional details.
+See the comments in the [`defaults/main.yaml`](defaults/main.yaml) file for additional details.
 
 # Adding or removing Radicale user accounts
 
