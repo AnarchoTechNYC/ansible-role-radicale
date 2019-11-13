@@ -1,16 +1,19 @@
 ---
-language: minimal
+version: ~> 1.0
+
+os: linux
+language: shell
 
 env:
   - docker_repo: resin/rpi-raspbian
+  - docker_file: Dockerfile.geerlingguy-debian10-ansible
   - docker_file: Dockerfile.geerlingguy-debian9-ansible
-  - docker_file: Dockerfile.geerlingguy-debian8-ansible
   - docker_file: Dockerfile.geerlingguy-ubuntu1804-ansible
   # TODO: RedHat-based systems.
   #- docker_file: Dockerfile.geerlingguy-centos7-ansible
   #- docker_file: Dockerfile.geerlingguy-fedora27-ansible
 
-matrix:
+jobs:
   # TODO: Fix these failures?
   allow_failures:
     # TODO: Fixing the Raspbian build is going to require QEMU and
@@ -18,8 +21,6 @@ matrix:
     #       https://www.balena.io/blog/building-arm-containers-on-any-x86-machine-even-dockerhub/
     #       In the mean time, allow this to fail.
     - env: docker_repo=resin/rpi-raspbian
-    #- env: docker_file=Dockerfile.geerlingguy-centos7-ansible
-    #- env: docker_file=Dockerfile.geerlingguy-fedora27-ansible
 
 install:
   # TODO: If this becomes a gnarly conditional make it a shell script.
