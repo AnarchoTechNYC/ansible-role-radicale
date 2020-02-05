@@ -97,6 +97,17 @@
         group: "{{ radicale_server_username }}"
       loop: "{{ radicale_users }}"
 
+    - name: Ensure Radicale user state is applied.
+      when: item.state is defined
+      htpasswd:
+        path: "{{ radicale_config.auth.htpasswd_filename | default('/var/lib/radicale/users.htpasswd') }}"
+        name: "{{ item.name }}"
+        state: "{{ item.state | default('present') }}"
+        mode: "600"
+        owner: "{{ radicale_server_username }}"
+        group: "{{ radicale_server_username }}"
+      loop: "{{ radicale_users }}"
+
 - name: Create systemd service unit.
   template:
     src: radicale.service.j2
