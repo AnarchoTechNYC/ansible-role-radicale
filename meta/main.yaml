@@ -15,8 +15,8 @@ galaxy_info:
       versions:
         - 9
   galaxy_tags:
-    - CalDAV
-    - CardDAV
+    - caldav
+    - carddav
     - calendar
     - contacts
     - addressbook
