@@ -1,0 +1,11 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+  - name: Radicale server is operational.
+    uri:
+      url: http://localhost:5232/
+      return_content: true
+    register: this
+    failed_when: "'Radicale' not in this.content"

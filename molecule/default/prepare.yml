@@ -1,0 +1,7 @@
+---
+- hosts: all
+  tasks:
+    - name: Prime APT cache.
+      when: ansible_facts.os_family == "Debian"
+      apt:
+          update_cache: true

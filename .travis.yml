@@ -2,6 +2,7 @@
 version: ~> 1.0
 
 os: linux
+dist: bionic
 language: shell
 
 env:
@@ -22,51 +23,16 @@ jobs:
     #       In the mean time, allow this to fail.
     - env: docker_repo=resin/rpi-raspbian
 
-install:
-  # TODO: If this becomes a gnarly conditional make it a shell script.
-  - >
-    if [ x"${docker_file}" != "x" ]; then
-    docker image build --tag built-image --file tests/"${docker_file}" tests;
-    fi
-  - container_id=$(mktemp)
-  - >
-    docker container run --detach --privileged
-    --volume /sys/fs/cgroup:/sys/fs/cgroup:ro
-    --volume "${PWD}":/etc/ansible/roles/ansible-role-radicale:ro
-    --publish 5232:5232
-    built-image > ${container_id}
+before_install:
+    # Upgrade to newest Docker Engine.
+    - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+    - sudo apt-get update
+    - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
 
-  # Bootstrap to ensure Ansible is available in the container.
-  # This is to ensure that the containers not already pre-imaged with
-  # Ansible installed (i.e., Raspbian image) will have it available.
-  - >
-    docker container exec --tty $(cat ${container_id}) env TERM=xterm
-    pip install ansible
+install:
+  - sudo apt-get install python3-pip python3-setuptools python3-wheel
+  - pip3 install --user molecule[docker] yamllint ansible-lint
 
 script:
-  # Check Ansible role/playbook syntax.
-  - >
-    docker container exec --tty "$(cat ${container_id})" env TERM=xterm
-    ansible-playbook --syntax-check /etc/ansible/roles/ansible-role-radicale/tests/test.yaml
-
-  # Ensure the role/playbook runs without errors or failures.
-  - >
-    docker exec --tty "$(cat ${container_id})" env TERM=xterm
-    ansible-playbook /etc/ansible/roles/ansible-role-radicale/tests/test.yaml
-
-  # Run the role/playbook again to test idempotence.
-  - idempotence=$(mktemp)
-  - >
-    docker exec "$(cat ${container_id})"
-    ansible-playbook /etc/ansible/roles/ansible-role-radicale/tests/test.yaml
-    | tee -a ${idempotence}
-  - >
-    tail ${idempotence}
-    | grep -q 'changed=0.*failed=0'
-    && (echo 'Idempotence test: pass' && exit 0)
-    || (echo 'Idempotence test: fail' && exit 1)
-
-  - curl http://localhost:5232/
-
-after_script:
-  - docker container rm -f "$(cat ${container_id})"
+  - molecule test
