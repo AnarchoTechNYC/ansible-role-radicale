@@ -40,11 +40,13 @@
   file:
     path: /etc/radicale
     state: directory
+    mode: '0755'
 
 - name: Write Radicale configuration file.
   template:
     src: etc/radicale/config.j2
     dest: /etc/radicale/config
+    mode: '0644'
   notify:
     - Restart Radicale.
 
@@ -70,6 +72,7 @@
         state: touch
         access_time: preserve
         modification_time: preserve
+        mode: '0600'
 
     - name: Set Radicale user with password.
       when: item.password is defined
@@ -112,6 +115,7 @@
   template:
     src: radicale.service.j2
     dest: /etc/systemd/system/radicale.service
+    mode: '0644'
     # TODO:
     #validate: "systemd-analyze verify %s"
   notify:
