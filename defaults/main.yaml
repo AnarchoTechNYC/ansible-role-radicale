@@ -3,7 +3,7 @@ radicale_server_username: radicale
 radicale_server_home_dir: "/var/lib/{{ radicale_server_username }}"
 radicale_service_state: started
 
-# See https://radicale.org/configuration/
+# See https://radicale.org/3.0.html#documentation/configuration
 radicale_config:
   server:
     hosts:
