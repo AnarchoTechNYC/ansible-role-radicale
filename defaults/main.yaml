@@ -14,8 +14,6 @@ radicale_config:
     #max_connections: 20
     #max_connections: 100000000
     #timeout: 30
-    dns_lookup: false
-    #realm: Radicale Realm
     # Consider TLS directives carefully before activating them.
     #ssl: true
     #certificate: "/etc/ssl/radicale.cert.pem"
@@ -27,6 +25,7 @@ radicale_config:
     #request: utf-8
     #stock: utf-8
   auth:
+    #realm: Radicale Realm
     type: htpasswd
     htpasswd_filename: "{{ radicale_server_home_dir }}/users.htpasswd"
     htpasswd_encryption: bcrypt
