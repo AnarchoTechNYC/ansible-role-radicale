@@ -9,9 +9,9 @@
       - python3-setuptools
       - apache2-utils
       # These three are for Ansible itself to run on the managed host.
-      - python-setuptools
-      - python-passlib
-      - python-bcrypt
+      - python3-setuptools
+      - python3-passlib
+      - python3-bcrypt
 
 - name: Install Radicale Python dependencies.
   pip:
